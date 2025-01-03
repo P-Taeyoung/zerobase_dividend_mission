@@ -1,5 +1,6 @@
 package com.zerobase.stock_dividend.service;
 
+import com.zerobase.stock_dividend.exception.impl.AlreadyExistUserException;
 import com.zerobase.stock_dividend.model.Auth;
 import com.zerobase.stock_dividend.model.MemberEntity;
 import com.zerobase.stock_dividend.persist.repository.MemberRepository;
@@ -27,7 +28,7 @@ public class MemberService implements UserDetailsService {
     public MemberEntity register(Auth.SignUp member) {
        boolean exists = this.memberRepository.existsByUsername(member.getUsername());
        if (exists) {
-           throw new RuntimeException("Username already exists");
+           throw new AlreadyExistUserException();
        }
 
        member.setPassword(this.passwordEncoder.encode(member.getPassword()));
