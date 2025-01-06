@@ -1,5 +1,6 @@
 package com.zerobase.stock_dividend.service;
 
+import com.zerobase.stock_dividend.exception.impl.AlreadyExistCompany;
 import com.zerobase.stock_dividend.exception.impl.NoCompanyException;
 import com.zerobase.stock_dividend.model.Company;
 import com.zerobase.stock_dividend.model.ScrapedResult;
@@ -33,7 +34,7 @@ public class CompanyService {
     public Company save(String ticker) {
         boolean exists = this.companyRepository.existsByTicker(ticker);
         if (exists) {
-            throw new RuntimeException("Company already exists" + ticker);
+            throw new AlreadyExistCompany();
         }
         return this.storeCompanyAndDividend(ticker);
     }
@@ -46,8 +47,7 @@ public class CompanyService {
         //ticker를 기준으로 회사를 스크래핑
         Company company = this.yahooFinanceScraper.scrapeCompanyByTicker(ticker);
         if (ObjectUtils.isEmpty(company)) {
-            System.out.println("Company does not exist");
-            throw new RuntimeException("Invalid ticker: " + ticker);
+            throw new NoCompanyException();
         }
 
         // 해당 회사가 존재할 경우, 회사의 배당금 정보를 스크래핑
